@@ -3,6 +3,7 @@
 #include <random>
 #include <chrono>
 #include <algorithm>
+#include <stack>
 using namespace std;
 
 struct coordinate{
@@ -30,9 +31,10 @@ class Game{
         bool win_;
         bool full_;
         unsigned int score_;
+        vector<coordinate> free_list;
     public:
         
-        Game(): win_(false),full_(false),score_(0) {}
+        Game(): win_(false),full_(false),score_(0),free_list({0*16}) {}
 
         void PrintBoard(){
             for (int i = 0; i<4; ++i) {
@@ -58,21 +60,17 @@ class Game{
             vector<coordinate> free_list;
             GetAvailableTiles(free_list);
             int shuffle_times = free_list.size()>1 ? 2 : 1;
-            // for (auto i : free_list) {
-            //     cout << i.x << "," << i.y << endl;
-            // }
+
             cout << shuffle_times << endl;
             while (shuffle_times > 0) {
+
                 // time-besed seed
                 unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
                 shuffle(free_list.begin(), free_list.end(), default_random_engine(seed));
-#if 1
+                
                 coordinate last = free_list.back();
-                //cout << last.x << "," << last.y << endl;
                 data_[last.x][last.y].SetValue(2);
                 free_list.pop_back();
-
-#endif
                 --shuffle_times;
             }
 
@@ -97,6 +95,7 @@ int main(int argc, char* argv[]){
     g.PrintBoard();
     g.PopNumber();
     g.PrintBoard();
+    
 /*
     while(cin >> arg) {
         switch (arg)
